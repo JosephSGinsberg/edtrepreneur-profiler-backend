@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edtrepreneur Profiler</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #fdf6ec;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 40px;
+    }
+    h1 { color: #ff6a00; }
+    form {
+      width: 80%;
+      max-width: 500px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+    button {
+      background: #ff6a00;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    #result {
+      margin-top: 25px;
+      width: 80%;
+      max-width: 500px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Edtrepreneur Profiler</h1>
+  <form id="assessmentForm">
+    <textarea id="story" placeholder="Tell us your story..." required></textarea>
+    <textarea id="goals" placeholder="What are your goals?" required></textarea>
+    <textarea id="motivations" placeholder="What motivates you?" required></textarea>
+    <textarea id="learningStyle" placeholder="Describe your learning style..." required></textarea>
+    <button type="submit">Analyze My Profile</button>
+  </form>
+
+  <div id="result" style="display:none;">
+    <h2>Result</h2>
+    <p><strong>Profile Summary:</strong> <span id="summary"></span></p>
+    <p><strong>Archetype:</strong> <span id="archetype"></span></p>
+    <p><strong>Strengths:</strong> <span id="strengths"></span></p>
+    <p><strong>Growth Areas:</strong> <span id="growth"></span></p>
+  </div>
+
+  <script>
+    document.getElementById("assessmentForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const story = document.getElementById("story").value;
+      const goals = document.getElementById("goals").value;
+      const motivations = document.getElementById("motivations").value;
+      const learningStyle = document.getElementById("learningStyle").value;
+
+      const response = await fetch("http://localhost:5000/api/assessment/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ story, goals, motivations, learningStyle }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        document.getElementById("summary").innerText = data.profile.aiAnalysis.profileSummary;
+        document.getElementById("archetype").innerText = data.profile.aiAnalysis.learnerArchetype;
+        document.getElementById("strengths").innerText = data.profile.aiAnalysis.strengthAreas.join(", ");
+        document.getElementById("growth").innerText = data.profile.aiAnalysis.growthAreas.join(", ");
+        document.getElementById("result").style.display = "block";
+      } else {
+        alert("Error: " + data.error);
+      }
+    });
+  </script>
+</body>
+</html>
