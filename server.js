@@ -25,10 +25,10 @@ app.use('/api', limiter);
 // Database connection
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/edtrepreneur_db', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    await mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000
+});
+
     console.log('✅ MongoDB Connected');
   } catch (error) {
     console.error('❌ MongoDB Connection Error:', error.message);
