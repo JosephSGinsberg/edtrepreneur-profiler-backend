@@ -6,7 +6,13 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
-console.log('Loaded HF Key:', process.env.HF_API_KEY ? process.env.HF_API_KEY.slice(0, 8) + '...' : '❌ MISSING');
+
+// Fail fast if required settings are missing (names only, never values)
+const missing = ['MONGO_URI', 'HF_API_KEY', 'JWT_SECRET'].filter((k) => !process.env[k]);
+if (missing.length) {
+  console.error(`❌ Missing in .env: ${missing.join(', ')} (see .env.example)`);
+  process.exit(1);
+}
 
 const app = express();
 
@@ -38,8 +44,6 @@ connectDB();
 
 // Simple route
 app.use('/api/auth', require('./src/routes/auth'));
-app.use('/api/assessment', require('./src/routes/assessment'));
-console.log("🧩 Auth route loaded:", require('./src/routes/auth'));
 app.use('/api/assessment', require('./src/routes/assessment'));
 
 app.get('/', (req, res) => {

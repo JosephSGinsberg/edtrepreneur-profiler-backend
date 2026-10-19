@@ -21,7 +21,8 @@ UserSchema.methods.matchPassword = async function (password) {
 };
 
 UserSchema.methods.getSignedJwtToken = function () {
-  return jwt.sign({ id: this._id }, 'mysecretkey', { expiresIn: '7d' });
+  if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is not set');
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
 module.exports = mongoose.model('User', UserSchema);
