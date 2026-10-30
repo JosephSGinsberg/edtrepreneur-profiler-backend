@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Reflection & Refinement</title>
+<style>
+:root{ --ink:#1a1512; --paper:#fffbf6; --paper-2:#f6efe4; --accent:#ff6a00; --accent-ink:#7a2e00; --line:#e6d9c4; --line-strong:#d8c7a6; --ok:#3a7d44; --focus:#ff6a00; color-scheme: light; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ink:#f3ede2; --paper:#1a1512; --paper-2:#241c15; --accent:#ff7f1f; --accent-ink:#ffd9b0; --line:#3a2f22; --line-strong:#4a3c29; --ok:#6fbf73; --focus:#ff7f1f; color-scheme: dark; } }
+:root[data-theme="dark"]{ --ink:#f3ede2; --paper:#1a1512; --paper-2:#241c15; --accent:#ff7f1f; --accent-ink:#ffd9b0; --line:#3a2f22; --line-strong:#4a3c29; --ok:#6fbf73; --focus:#ff7f1f; color-scheme: dark; }
+*{box-sizing:border-box}
+body{ background:var(--paper); color:var(--ink); font-family:Arial,Helvetica,"Liberation Sans",sans-serif; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+.wrap{max-width:720px; margin:0 auto;}
+.brand{ padding-block:18px 10px; border-bottom:3px solid var(--ink); }
+.brand-row{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.brand-mark{font-weight:900; font-size:15px; letter-spacing:.06em;} .brand-mark .accent{color:var(--accent);}
+.brand-tag{font-size:10px; letter-spacing:.14em; color:var(--ink); opacity:.65; font-weight:700;}
+.module-title{margin:10px 0 2px; font-size:26px; font-weight:900; line-height:1.15;}
+.module-sub{font-size:13px; opacity:.75; margin:0 0 10px;}
+.progress{ display:flex; gap:5px; margin-top:4px; } .progress .seg{ flex:1; height:4px; border-radius:3px; background:var(--line-strong); } .progress .seg.done{ background:var(--accent); }
+main{padding-block:22px 48px;} .lead{font-size:15px; line-height:1.55; margin:0 0 16px;}
+.doors{display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:14px;} @media (min-width:560px){ .doors{grid-template-columns:1fr 1fr;} }
+.door{ border:1.5px solid var(--line-strong); border-radius:12px; background:var(--paper-2); padding:14px; cursor:pointer; transition:border-color .15s; display:flex; flex-direction:column; gap:8px; min-height:108px; }
+.door:hover{ border-color:var(--accent); } .door:focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
+.door.open{ grid-column:1/-1; border-color:var(--accent); cursor:default; background:color-mix(in srgb, var(--accent) 7%, var(--paper-2)); } .door.dim{ opacity:.35; }
+.diagram{ display:flex; align-items:center; justify-content:center; gap:6px; padding:6px 0; } .diagram svg{ width:100%; max-width:260px; height:auto; }
+.passage-text{ font-size:14.5px; line-height:1.55; font-style:italic; }
+.clip-row{ display:flex; align-items:center; gap:12px; }
+.playbtn{ flex:none; width:44px; height:44px; border-radius:50%; border:none; background:var(--ink); color:var(--paper); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.wave{ flex:1; height:26px; display:flex; align-items:center; gap:3px; } .wave span{ width:3px; background:var(--line-strong); border-radius:2px; }
+.clip-dur{ font-size:11px; opacity:.6; font-variant-numeric:tabular-nums; }
+.puzzle-tiles{ display:flex; flex-direction:column; gap:6px; }
+.puzzle-tile{ border:1.5px solid var(--line-strong); border-radius:8px; background:var(--paper); padding:8px 10px; font-size:13px; cursor:grab; display:flex; align-items:center; gap:8px; }
+.puzzle-tile.dragging{ opacity:.4; }
+.puzzle-tile .num{ flex:none; width:20px; height:20px; border-radius:50%; background:var(--line-strong); color:var(--ink); display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:800; }
+.puzzle-tile.correct .num{ background:var(--ok); color:#fff; } .puzzle-status{ font-size:11.5px; opacity:.65; margin-top:2px; }
+.bubble{ max-width:88%; padding:9px 12px; border-radius:14px; font-size:13.5px; line-height:1.4; }
+.bubble.them{ background:var(--line); align-self:flex-start; border-bottom-left-radius:4px; } .thread{ display:flex; flex-direction:column; gap:6px; }
+.ans-reveal{ margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong); }
+textarea{ width:100%; min-height:64px; resize:vertical; font-family:inherit; font-size:14px; line-height:1.4; padding:10px; border-radius:8px; border:1.5px solid var(--line-strong); background:var(--paper); color:var(--ink); }
+.nextbtn{ display:inline-block; margin-top:4px; font-family:inherit; font-weight:800; font-size:13.5px; background:var(--ink); color:var(--paper); border:none; border-radius:8px; padding:11px 18px; cursor:pointer; }
+.card{ border:1.5px solid var(--line-strong); border-radius:12px; background:var(--paper-2); padding:16px; margin-bottom:16px; }
+.card.outcome{ border-color:var(--accent); background:color-mix(in srgb, var(--accent) 8%, var(--paper-2)); }
+.card h3{margin:0 0 6px; font-size:13px; letter-spacing:.04em; text-transform:uppercase; font-weight:800;}
+.field{ margin-bottom:10px; } .field label{ display:block; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; opacity:.6; margin-bottom:4px; }
+input.plain{ width:100%; font-family:inherit; font-size:14px; padding:9px 10px; border-radius:8px; border:1.5px solid var(--line-strong); background:var(--paper); color:var(--ink); }
+.reveal{ border:2px solid var(--accent); border-radius:14px; padding:20px 18px; background:color-mix(in srgb, var(--accent) 10%, var(--paper-2)); }
+.reveal h2{ margin:0 0 6px; font-size:20px; font-weight:900; }
+.reveal-bars{ display:flex; flex-direction:column; gap:6px; margin:14px 0; }
+.reveal-row{ display:flex; align-items:center; gap:8px; font-size:12.5px; }
+.reveal-row .name{ width:92px; flex:none; font-weight:700; } .reveal-row .bar-track{ flex:1; height:10px; border-radius:6px; background:var(--line); overflow:hidden; }
+.reveal-row .bar-fill{ height:100%; background:var(--accent); border-radius:6px; } .reveal-row .count{ width:20px; text-align:right; opacity:.7; }
+details.qa{ margin-top:18px; border:1px dashed var(--line-strong); border-radius:10px; background:var(--paper-2); padding:10px 12px; }
+details.qa summary{ cursor:pointer; font-size:11px; font-weight:700; } details.qa .qa-body{ font-size:11.5px; opacity:.75; margin-top:8px; line-height:1.5; }
+footer{border-top:1px solid var(--line); padding-block:16px 30px; font-size:11.5px; opacity:.6; text-align:center;}
+.puzzle-tile.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);}
+.puzzle-tile{-webkit-user-select:none;user-select:none;touch-action:manipulation;}
+</style>
+</head><body>
+<div class="wrap">
+  <div class="brand"><div class="brand-row"><div class="brand-mark">JSG <span class="accent">|</span> Identity. Value. Direction.</div><div class="brand-tag">MENTORSHIP &bull; ENTREPRENEURSHIP &bull; GROWTH</div></div>
+    <h1 class="module-title">Module 7 &mdash; Reflection &amp; Refinement</h1>
+    <p class="module-sub">Thesis stage 10 of 10 &mdash; new, closing the loop the other six modules opened.</p>
+    <div class="progress" id="progress"></div>
+  </div>
+  <main id="main"></main>
+  <footer>Ignition Point &bull; Module 7 of 7 &bull; JSG &mdash; Identity. Value. Direction.</footer>
+</div>
+<script src="ip-profile.js" data-module="7"></script>
+<script>
+(function(){
+  var QUESTIONS = [
+    { id:'q1', text:'Looking back, what actually happened — not what you planned, but what you did?',
+      keywords:['Did','Not planned'], friend:'Ayanda', friendLine:'Forget the plan for a second — what did you actually do?',
+      chunks:['Looking back, what actually happened','— not what you planned,','but what you did?'] },
+    { id:'q2', text:'What did you learn about yourself as the person doing this, not just about the market?',
+      keywords:['About you','Not market'], friend:'Kagiso', friendLine:'What did this teach you about YOU, not just about whether people would pay?',
+      chunks:['What did you learn about yourself','as the person doing this,','not just about the market?'] },
+    { id:'q3', text:'What will you keep doing, what will you change, and what will you stop?',
+      keywords:['Keep','Change','Stop'], friend:'Refilwe', friendLine:'Of everything you did — what do you keep, what do you change, what do you just stop?',
+      chunks:['What will you keep doing,','what will you change,','and what will you stop?'] },
+    { id:'q4', text:'Is your next Ignition Point this same offer refined, or a genuinely different direction?',
+      keywords:['Refine','New direction'], friend:'Sipho', friendLine:'Next round — same offer, sharper? Or honestly a different direction altogether?',
+      chunks:['Is your next Ignition Point','this same offer refined,','or a genuinely different direction?'] }
+  ];
+  var DOORS = ['diagram','passage','clip','puzzle','thread'];
+  var DOOR_LABEL_FOR_QA = { diagram:'Diagram', passage:'Passage', clip:'Spoken clip', puzzle:'Puzzle', thread:'Chat thread' };
+  var ORDER = ['q0','q1','q2','q3','commit','reveal'];
+  var state = { step:'q0', openDoor:{}, puzzleOrder:{}, puzzleSolved:{}, answers:{q1:'',q2:'',q3:'',q4:''},
+    commit:{action:'',date:''}, tally:{diagram:0,passage:0,clip:0,puzzle:0,thread:0} };
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  function shuffled(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  var mainEl, progressEl;
+  var cachedVoice = null;
+  function pickVoice(){
+    var voices = window.speechSynthesis.getVoices();
+    if(!voices || !voices.length) return null;
+    var au = voices.filter(function(v){return v.lang==='en-AU';});
+    var auFemale = au.filter(function(v){return /female/i.test(v.name);});
+    if(auFemale.length) return auFemale[0];
+    if(au.length) return au[0];
+    var en = voices.filter(function(v){return /^en/i.test(v.lang);});
+    var enFemale = en.filter(function(v){return /female/i.test(v.name);});
+    if(enFemale.length) return enFemale[0];
+    return en[0] || voices[0];
+  }
+  function speakText(text){
+    try{
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      var v = cachedVoice || pickVoice();
+      if(v) u.voice = v;
+      u.rate = 0.95;
+      window.speechSynthesis.speak(u);
+    }catch(err){}
+  }
+  try{ cachedVoice = pickVoice(); if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged = function(){ cachedVoice = pickVoice(); }; }catch(err){}
+  function renderProgress(){ var done=ORDER.indexOf(state.step); var h=''; for(var i=0;i<ORDER.length;i++){ h+='<div class="seg'+(i<=done?' done':'')+'"></div>'; } progressEl.innerHTML=h; }
+  function goTo(s){ state.step=s; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+  function pickDoor(qId, doorId){ if(state.openDoor[qId]) return; state.openDoor[qId]=doorId; state.tally[doorId]=(state.tally[doorId]||0)+1;
+    if(doorId==='puzzle' && !state.puzzleOrder[qId]){ var q=QUESTIONS.filter(function(x){return x.id===qId;})[0]; state.puzzleOrder[qId]=shuffled(q.chunks.map(function(_,i){return i;})); } render(); }
+  function doorDiagram(q){ var nodes=q.keywords.map(function(k,i){ var x=30+i*((240-30)/Math.max(1,q.keywords.length-1||1)); return '<g><circle cx="'+x+'" cy="40" r="16" fill="var(--accent)" opacity="0.85"/><text x="'+x+'" y="68" font-size="9" text-anchor="middle" fill="var(--ink)">'+esc(k)+'</text></g>'; }).join('');
+    var lines=''; for(var i=0;i<q.keywords.length-1;i++){ var x1=30+i*((240-30)/Math.max(1,q.keywords.length-1||1)); var x2=30+(i+1)*((240-30)/Math.max(1,q.keywords.length-1||1)); lines+='<line x1="'+x1+'" y1="40" x2="'+x2+'" y2="40" stroke="var(--line-strong)" stroke-width="2"/>'; }
+    return '<div class="diagram"><svg viewBox="0 0 260 80">'+lines+nodes+'</svg></div>'; }
+  function doorPassage(q){ return '<p class="passage-text">“'+esc(q.text)+'”</p>'; }
+  function doorClip(q){ var bars=''; for(var i=0;i<22;i++){ bars+='<span style="height:'+(6+Math.round(Math.sin(i*1.3)*8+8))+'px"></span>'; } return '<div class="clip-row"><button class="playbtn" data-speak="'+q.id+'" aria-label="Play">&#9654;</button><div class="wave">'+bars+'</div><span class="clip-dur">0:1'+q.id.slice(1)+'</span></div>'; }
+  function doorPuzzle(q, open){ if(!open) return '<div class="puzzle-tiles" style="pointer-events:none;">'+q.chunks.slice(0,2).map(function(c){return '<div class="puzzle-tile"><span class="num">?</span>'+esc(c.slice(0,18))+'&hellip;</div>';}).join('')+'</div>';
+    var order=state.puzzleOrder[q.id]||q.chunks.map(function(_,i){return i;}); var solved=order.every(function(v,i){return v===i;}); state.puzzleSolved[q.id]=solved;
+    var tiles=order.map(function(ci,pos){ return '<div class="puzzle-tile'+(solved?' correct':'')+((state.sel&&state.sel[q.id]===ci)?' sel':'')+'" draggable="true" data-qid="'+q.id+'" data-chunk="'+ci+'"><span class="num">'+(solved?'&#10003;':(pos+1))+'</span>'+esc(q.chunks[ci])+'</div>'; }).join('');
+    return '<div class="puzzle-tiles" id="puzzle-'+q.id+'">'+tiles+'</div><p class="puzzle-status">'+(solved?'In the right order.':'Tap two pieces to swap them (or drag) until the sentence reads correctly.')+'</p>'; }
+  function doorThread(q, open){ if(!open) return '<div class="thread"><div class="bubble them">'+esc(q.friend)+' is asking you something&hellip;</div></div>';
+    return '<div class="thread"><div class="bubble them"><strong>'+esc(q.friend)+':</strong> '+esc(q.friendLine)+'</div></div>'; }
+  function renderDoorsFor(q){ var open=state.openDoor[q.id]; var h='<div class="doors">';
+    DOORS.forEach(function(d){ var isOpen=open===d, isDim=open&&!isOpen, inner;
+      if(d==='diagram') inner=doorDiagram(q); else if(d==='passage') inner=doorPassage(q); else if(d==='clip') inner=doorClip(q);
+      else if(d==='puzzle') inner=doorPuzzle(q,isOpen); else inner=doorThread(q,isOpen);
+      h+='<div class="door'+(isOpen?' open':'')+(isDim?' dim':'')+'" '+(open?'':'data-door="'+d+'" data-qid="'+q.id+'" tabindex="0" role="button"')+'>'+inner+'</div>'; });
+    return h+'</div>'; }
+  function canAnswer(q){ var d=state.openDoor[q.id]; if(!d) return false; if(d==='puzzle') return !!state.puzzleSolved[q.id]; return true; }
+  function renderQuestionStep(idx){ var q=QUESTIONS[idx]; var h='<p class="lead">Question '+(idx+1)+' of 4. Open whichever version feels right.</p>'+renderDoorsFor(q);
+    if(canAnswer(q)){ h+='<div class="ans-reveal"><textarea data-ans="'+q.id+'" placeholder="Write your answer here&hellip;">'+esc(state.answers[q.id])+'</textarea></div><button class="nextbtn" data-next="1">Continue</button>'; } return h; }
+  function renderCommit(){
+    return '<div class="card outcome"><h3>Your refinement commitment</h3>'+
+      '<p style="font-size:13.5px; opacity:.8; margin:0 0 10px;">Clarity grows through action and feedback. You don’t need the whole map — you need a next step you can take, observe and learn from.</p>'+
+      '<div class="field"><label>The one action I commit to taking next</label><input class="plain" data-commit="action" value="'+esc(state.commit.action)+'"></div>'+
+      '<div class="field"><label>I will do it by (date)</label><input class="plain" data-commit="date" value="'+esc(state.commit.date)+'"></div></div>'+
+      '<button class="nextbtn" data-next="1">See what this revealed</button>';
+  }
+  function renderReveal(){ var tally=state.tally, max=Math.max.apply(null, Object.values(tally));
+    var leaders=DOORS.filter(function(d){return tally[d]===max&&max>0;}); var headline=leaders.length>1?'a genuine mix':DOOR_LABEL_FOR_QA[leaders[0]];
+    var rows=DOORS.map(function(d){ var pct=max?Math.round((tally[d]/4)*100):0; return '<div class="reveal-row"><span class="name">'+DOOR_LABEL_FOR_QA[d]+'</span><span class="bar-track"><span class="bar-fill" style="width:'+pct+'%"></span></span><span class="count">'+tally[d]+'</span></div>'; }).join('');
+    return '<div class="reveal"><h2>The full loop, closed</h2><p style="font-size:14px; line-height:1.5; margin:4px 0 0;">Most often across this whole kit: <strong>'+esc(headline.toLowerCase())+'</strong>. Your next Ignition Point starts exactly where this one did &mdash; back at Perception.</p><div class="reveal-bars">'+rows+'</div></div>'+
+      '<details class="qa"><summary>Build QA &mdash; raw signal</summary><div class="qa-body">doors: '+JSON.stringify(state.openDoor)+'<br>tally: '+JSON.stringify(tally)+'<br>In production, all 6 modules’ tallies combine into one running engagement profile on the contact record.</div></details>';
+  }
+  function render(){ renderProgress(); var h;
+    if(state.step==='commit') h=renderCommit(); else if(state.step==='reveal') h=renderReveal();
+    else { var idx=parseInt(state.step.slice(1),10); h=renderQuestionStep(idx); }
+    mainEl.innerHTML=h; bind(); if(state.step==='reveal' && window.ipSave){ window.ipSave({tally:state.tally, answers:{core:state.answers, commit:state.commit}}); } }
+  function bind(){
+    Array.prototype.forEach.call(mainEl.querySelectorAll('[data-door]'), function(el){ function act(){pickDoor(el.dataset.qid, el.dataset.door);} el.addEventListener('click',act); el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}}); });
+    Array.prototype.forEach.call(mainEl.querySelectorAll('[data-speak]'), function(btn){ btn.addEventListener('click', function(e){ e.stopPropagation(); var q=QUESTIONS.filter(function(x){return x.id===btn.dataset.speak;})[0]; speakText(q.text); }); });
+    Array.prototype.forEach.call(mainEl.querySelectorAll('[data-ans]'), function(t){ t.addEventListener('input', function(){ state.answers[t.dataset.ans]=t.value; }); });
+    Array.prototype.forEach.call(mainEl.querySelectorAll('[data-commit]'), function(t){ t.addEventListener('input', function(){ state.commit[t.dataset.commit]=t.value; }); });
+    Array.prototype.forEach.call(mainEl.querySelectorAll('[data-next]'), function(btn){ btn.addEventListener('click', function(){ var i=ORDER.indexOf(state.step); goTo(ORDER[i+1]||'reveal'); }); });
+    Array.prototype.forEach.call(mainEl.querySelectorAll('.puzzle-tile[draggable]'), function(tile){
+      tile.addEventListener('click', function(){
+        var qId=tile.dataset.qid, ci0=parseInt(tile.dataset.chunk,10);
+        state.sel = state.sel||{};
+        var cur=state.sel[qId];
+        if(cur===undefined){ state.sel[qId]=ci0; render(); return; }
+        if(cur===ci0){ delete state.sel[qId]; render(); return; }
+        var order=state.puzzleOrder[qId], a=order.indexOf(cur), b=order.indexOf(ci0);
+        var t=order[a]; order[a]=order[b]; order[b]=t; delete state.sel[qId]; render();
+      });
+    });
+    Array.prototype.forEach.call(mainEl.querySelectorAll('.puzzle-tile[draggable]'), function(tile){
+      tile.addEventListener('dragstart', function(){ tile.classList.add('dragging'); }); tile.addEventListener('dragend', function(){ tile.classList.remove('dragging'); });
+      tile.addEventListener('dragover', function(e){ e.preventDefault(); });
+      tile.addEventListener('drop', function(e){ e.preventDefault(); var qId=tile.dataset.qid; var c=mainEl.querySelector('#puzzle-'+qId); var dragging=c.querySelector('.dragging'); if(!dragging||dragging===tile) return;
+        var order=state.puzzleOrder[qId]; var fromPos=order.indexOf(parseInt(dragging.dataset.chunk,10)), toPos=order.indexOf(parseInt(tile.dataset.chunk,10));
+        var val=order[fromPos]; order.splice(fromPos,1); order.splice(toPos,0,val); render(); }); });
+  }
+  mainEl=document.getElementById('main'); progressEl=document.getElementById('progress'); render();
+})();
+</script>
+
+</body></html>

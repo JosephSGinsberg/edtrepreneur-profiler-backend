@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Why & Direction</title>
+<style>
+:root{ --ink:#1a1512; --paper:#fffbf6; --paper-2:#f6efe4; --accent:#ff6a00; --accent-ink:#7a2e00; --line:#e6d9c4; --line-strong:#d8c7a6; --ok:#3a7d44; --focus:#ff6a00; color-scheme: light; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ink:#f3ede2; --paper:#1a1512; --paper-2:#241c15; --accent:#ff7f1f; --accent-ink:#ffd9b0; --line:#3a2f22; --line-strong:#4a3c29; --ok:#6fbf73; --focus:#ff7f1f; color-scheme: dark; } }
+:root[data-theme="dark"]{ --ink:#f3ede2; --paper:#1a1512; --paper-2:#241c15; --accent:#ff7f1f; --accent-ink:#ffd9b0; --line:#3a2f22; --line-strong:#4a3c29; --ok:#6fbf73; --focus:#ff7f1f; color-scheme: dark; }
+*{box-sizing:border-box}
+body{ background:var(--paper); color:var(--ink); font-family:Arial,Helvetica,"Liberation Sans",sans-serif; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+.wrap{max-width:720px; margin:0 auto;}
+.brand{ padding-block:18px 10px; border-bottom:3px solid var(--ink); }
+.brand-row{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.brand-mark{font-weight:900; font-size:15px; letter-spacing:.06em;} .brand-mark .accent{color:var(--accent);}
+.brand-tag{font-size:10px; letter-spacing:.14em; color:var(--ink); opacity:.65; font-weight:700;}
+.module-title{margin:10px 0 2px; font-size:26px; font-weight:900; line-height:1.15;}
+.module-sub{font-size:13px; opacity:.75; margin:0 0 10px;}
+main{padding-block:22px 48px;} .lead{font-size:15px; line-height:1.55; margin:0 0 16px;}
+.card{ border:1.5px solid var(--line-strong); border-radius:12px; background:var(--paper-2); padding:16px; margin-bottom:16px; }
+.card h3{margin:0 0 6px; font-size:13px; letter-spacing:.04em; text-transform:uppercase; font-weight:800;}
+.card p.note{font-size:12.5px; opacity:.7; margin:0 0 10px;}
+.idea-row{ border:1.5px dashed var(--line-strong); border-radius:10px; padding:12px; margin-bottom:12px; }
+.idea-row input.idea-name{ width:100%; font-family:inherit; font-weight:700; font-size:14px; padding:8px 9px; border-radius:7px; border:1.5px solid var(--line-strong); background:var(--paper); color:var(--ink); margin-bottom:8px; }
+.score-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+@media (min-width:480px){ .score-grid{ grid-template-columns:repeat(4,1fr); } }
+.score-field label{ display:block; font-size:10px; letter-spacing:.04em; text-transform:uppercase; opacity:.6; margin-bottom:4px; }
+.score-field select{ width:100%; font-family:inherit; font-size:13px; padding:7px 8px; border-radius:7px; border:1.5px solid var(--line-strong); background:var(--paper); color:var(--ink); }
+.idea-total{ margin-top:8px; font-size:12px; font-weight:700; color:var(--accent-ink); }
+.checks{display:flex; flex-direction:column; gap:8px; margin-top:4px;}
+.checks label{display:flex; gap:8px; align-items:flex-start; font-size:13.5px; line-height:1.4; cursor:pointer;}
+.checks input{margin-top:3px; accent-color:var(--accent);}
+textarea,input.plain{ width:100%; font-family:inherit; font-size:14px; line-height:1.4; padding:10px; border-radius:8px; border:1.5px solid var(--line-strong); background:var(--paper); color:var(--ink); }
+textarea{min-height:56px; resize:vertical;}
+.nextbtn{ display:inline-block; margin-top:4px; font-family:inherit; font-weight:800; font-size:13.5px; background:var(--ink); color:var(--paper); border:none; border-radius:8px; padding:11px 18px; cursor:pointer; }
+.winner-badge{ display:inline-flex; gap:5px; font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--accent-ink); background:color-mix(in srgb, var(--accent) 14%, var(--paper)); border-radius:999px; padding:4px 9px; margin-top:8px; }
+footer{border-top:1px solid var(--line); padding-block:16px 30px; font-size:11.5px; opacity:.6; text-align:center;}
+</style>
+</head><body>
+<div class="wrap">
+  <div class="brand"><div class="brand-row"><div class="brand-mark">JSG <span class="accent">|</span> Identity. Value. Direction.</div><div class="brand-tag">MENTORSHIP &bull; ENTREPRENEURSHIP &bull; GROWTH</div></div>
+    <h1 class="module-title">Module 4 &mdash; Why &amp; Direction</h1>
+    <p class="module-sub">No doors here &mdash; this one is a decision tool, not a reflection prompt. Score honestly; the scores are a decision aid, not scientific proof.</p>
+  </div>
+  <main>
+    <div class="card">
+      <h3>Score each idea</h3>
+      <p class="note">1 (weak) to 5 (strong) on each criterion. Add up to three ideas.</p>
+      <div id="ideas"></div>
+    </div>
+    <div class="card">
+      <h3>My selected idea</h3>
+      <textarea id="selectedWhy" placeholder="Why I selected it, and what evidence I still need&hellip;"></textarea>
+      <div class="checks" style="margin-top:12px;">
+        <label><input type="checkbox">I can explain the idea in one sentence.</label>
+        <label><input type="checkbox">I can test it with existing skills and tools.</label>
+        <label><input type="checkbox">I know at least five people or channels through which to investigate demand.</label>
+        <label><input type="checkbox">I can deliver a small version before building a large one.</label>
+      </div>
+    </div>
+  <div id="ipsave" style="margin-top:6px"></div>
+  </main>
+  <footer>Ignition Point &bull; Module 4 of 7 &bull; JSG &mdash; Identity. Value. Direction.</footer>
+</div>
+<script src="ip-profile.js" data-module="4"></script>
+<script>
+(function(){
+  var CRIT = [ {id:'deliver', lbl:'I can deliver it'}, {id:'matters', lbl:'Problem matters'}, {id:'reach', lbl:'Reach people'}, {id:'cost', lbl:'Low start cost'} ];
+  var ideas = [ {name:'', scores:{}}, {name:'', scores:{}}, {name:'', scores:{}} ];
+  var ideasEl = document.getElementById('ideas');
+  function total(idea){ return CRIT.reduce(function(s,c){ return s+(parseInt(idea.scores[c.id],10)||0); },0); }
+  function render(){
+    var totals = ideas.map(total);
+    var max = Math.max.apply(null, totals);
+    var html = ideas.map(function(idea, i){
+      var opts = [1,2,3,4,5].map(function(n){ return '<option value="'+n+'"'+(idea.scores[CRIT[0].id]===String(n)?'':'')+'>'+n+'</option>'; }).join('');
+      var fields = CRIT.map(function(c){
+        var sel = CRIT.map(function(){return '';}); // noop
+        var current = idea.scores[c.id] || '';
+        var options = ['<option value="">&ndash;</option>'].concat([1,2,3,4,5].map(function(n){ return '<option value="'+n+'"'+(String(n)===current?' selected':'')+'>'+n+'</option>'; })).join('');
+        return '<div class="score-field"><label>'+c.lbl+'</label><select data-idea="'+i+'" data-crit="'+c.id+'">'+options+'</select></div>';
+      }).join('');
+      var isWinner = max>0 && totals[i]===max;
+      return '<div class="idea-row">'+
+        '<input class="idea-name" data-idea-name="'+i+'" value="'+idea.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'" placeholder="Idea '+(i+1)+' name&hellip;">'+
+        '<div class="score-grid">'+fields+'</div>'+
+        '<div class="idea-total">Total: '+totals[i]+' / 20'+(isWinner?' <span class="winner-badge">Leading</span>':'')+'</div>'+
+      '</div>';
+    }).join('');
+    ideasEl.innerHTML = html;
+    Array.prototype.forEach.call(ideasEl.querySelectorAll('[data-idea-name]'), function(inp){
+      inp.addEventListener('input', function(){ ideas[inp.dataset.ideaName].name = inp.value; });
+    });
+    Array.prototype.forEach.call(ideasEl.querySelectorAll('select'), function(sel){
+      sel.addEventListener('change', function(){ ideas[sel.dataset.idea].scores[sel.dataset.crit] = sel.value; render(); });
+    });
+  }
+  render();
+  ipMountButton(document.getElementById('ipsave'), function(){ return {tally:{}, answers:{ideas:ideas, selected:document.getElementById('selectedWhy').value}}; });
+})();
+</script>
+
+</body></html>
